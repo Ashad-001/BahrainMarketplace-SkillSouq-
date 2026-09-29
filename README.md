@@ -4,7 +4,7 @@ SkillSouq is a full-stack online service marketplace platform designed to connec
 
 Users can discover, list, and manage freelance gigs and professional services through an interactive web platform.
 
-![SkillSouq Preview](./public/preview.png)
+![SkillSouq Preview](preview.png)
 
 ## Features
 
