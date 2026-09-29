@@ -35,3 +35,23 @@ skill-souq/
 ├── components.json   # UI component configuration
 ├── package.json      # Frontend package dependencies & scripts
 └── tsconfig.json     # TypeScript configuration settings
+
+
+## 🚀 Local Setup & Installation
+
+```bash
+# 1. Clone the Repository
+git clone [https://github.com/Ashad-001/BahrainMarketplace-SkillSouq.git](https://github.com/Ashad-001/BahrainMarketplace-SkillSouq.git)
+cd BahrainMarketplace-SkillSouq
+
+# 2. Install Dependencies
+npm install
+
+# 3. Environment Variables Configuration
+# Copy the .env.example template to create your local .env configuration file:
+cp .env.example .env
+# Fill in your local Supabase credentials and API keys inside .env.
+
+# 4. Run Development Server
+npm run dev
+# Navigate to http://localhost:3000 in your browser to view the application live.
