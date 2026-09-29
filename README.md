@@ -1,36 +1,37 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SkillSouq 🛒🇧🇭
 
-## Getting Started
+**SkillSouq** is a full-stack online service marketplace platform designed to connect local service providers, freelancers, and clients in Bahrain. Users can discover, list, and manage freelance gigs and professional services through an intuitive, interactive web interface.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## ✨ Key Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Gig & Service Directory:** Browse, filter, and search local skills, gigs, and freelance services.
+- **User Authentication:** Secure user registration, login, and profile management workflows.
+- **Service Management:** Service providers can create, edit, and publish customized service offerings.
+- **Interactive Dashboard:** Seamless client-to-provider interactions and listing controls.
+- **Environment Security:** Integrated `.env` configuration protecting database credentials and secrets.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠 Tech Stack
 
-## Learn More
+- **Framework:** Next.js (React)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS
+- **Backend / Database:** Supabase
+- **Environment Management:** `dotenv`
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📂 Project Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```text
+skill-souq/
+├── public/           # Static assets, icons, and images
+├── src/              # Application source code (components, pages, styles)
+├── .env.example      # Template for environment variables
+├── .gitignore        # Rules to exclude sensitive files and node_modules
+├── components.json   # UI component configuration
+├── package.json      # Frontend package dependencies & scripts
+└── tsconfig.json     # TypeScript configuration settings
