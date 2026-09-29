@@ -1,53 +1,80 @@
-SkillSouq 🛒🇧🇭
-SkillSouq is a full-stack online service marketplace platform designed to connect local service providers, freelancers, and clients in Bahrain. Users can discover, list, and manage freelance gigs and professional services through an intuitive, interactive web interface.
+# SkillSouq
 
-✨ Key Features
-Gig & Service Directory: Browse, filter, and search local skills, gigs, and freelance services.
+SkillSouq is a full-stack online service marketplace platform designed to connect local service providers, freelancers, and clients in Bahrain.
 
-User Authentication: Secure user registration, login, and profile management workflows.
+Users can discover, list, and manage freelance gigs and professional services through an interactive web platform.
 
-Service Management: Service providers can create, edit, and publish customized service offerings.
+## Features
 
-Interactive Dashboard: Seamless client-to-provider interactions and listing controls.
+* **Gig & Service Directory** — Browse, search, and filter local skills, gigs, and freelance services.
+* **User Authentication** — User registration, login, and profile management.
+* **Service Management** — Create, edit, and publish service listings.
+* **Interactive Dashboard** — Manage listings and interactions between clients and service providers.
+* **Secure Configuration** — Environment variables are used to protect database credentials and application secrets.
 
-Environment Security: Integrated .env configuration protecting database credentials and secrets.
+## Tech Stack
 
-🛠 Tech Stack
-Framework: Next.js (React)
+* **Framework:** Next.js (React)
+* **Language:** TypeScript
+* **Styling:** Tailwind CSS
+* **Backend & Database:** Supabase
+* **Environment Management:** dotenv
 
-Language: TypeScript
+## Project Structure
 
-Styling: Tailwind CSS
-
-Backend / Database: Supabase
-
-Environment Management: dotenv
-
-📂 Project Structure
+```text
 skill-souq/
 ├── public/           # Static assets, icons, and images
-├── src/              # Application source code (components, pages, styles)
-├── .env.example      # Template for environment variables
-├── .gitignore        # Rules to exclude sensitive files and node_modules
+├── src/              # Application source code
+├── .env.example      # Environment variable template
+├── .gitignore        # Ignored files and directories
 ├── components.json   # UI component configuration
-├── package.json      # Frontend package dependencies & scripts
-└── tsconfig.json     # TypeScript configuration settings
+├── package.json      # Dependencies and project scripts
+└── tsconfig.json     # TypeScript configuration
+```
 
-🚀 Local Setup & Installation
-1. Clone the Repository
+## Local Setup
+
+### 1. Clone the Repository
+
+```bash
 git clone https://github.com/Ashad-001/BahrainMarketplace-SkillSouq.git
 cd BahrainMarketplace-SkillSouq
+```
 
-2. Install Dependencies
+### 2. Install Dependencies
+
+```bash
 npm install
+```
 
-3. Environment Variables Configuration
-Copy .env.example to create your local .env configuration file:
+### 3. Configure Environment Variables
+
+Create a local `.env` file from the provided template:
+
+```bash
 cp .env.example .env
+```
 
-Fill in your local Supabase credentials and API keys inside .env.
+Add the required Supabase credentials and API keys to `.env`.
 
-4. Run Development Server
+> Do not commit your `.env` file or expose private credentials in the repository.
+
+### 4. Run the Development Server
+
+```bash
 npm run dev
+```
 
-Navigate to http://localhost:3000 in your browser to view the application live.
+Open `http://localhost:3000` in your browser to access the application.
+
+## Project Status
+
+This project is currently under development. Features and functionality may continue to change as the platform evolves.
+
+## Author
+
+**Ashad**
+
+GitHub: https://github.com/Ashad-001
+
