@@ -1,0 +1,279 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { createClient } from '@supabase/supabase-js';
+import { 
+  Briefcase, MessageSquare, Wallet, Plus, Star, Loader2, 
+  Clock, Zap, ArrowRight, Scale, Landmark, FileText, CheckCircle2,
+  AlertCircle, ShieldAlert, Activity, BarChart3, TrendingUp, ShieldCheck
+} from "lucide-react";
+
+export default function SellerDashboard() {
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [needsLogin, setNeedsLogin] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
+  const [myGigs, setMyGigs] = useState<any[]>([]);
+  const [userCategory, setUserCategory] = useState<string>("General");
+  
+  // NEW: Tracking the actual verification status from the database
+  const [verificationStatus, setVerificationStatus] = useState<string>("unsubmitted");
+
+  useEffect(() => {
+    const init = async () => {
+      try {
+        const PROJECT_URL = "https://jgrovqdvsightthcdxaj.supabase.co";
+        const PROJECT_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impncm92cWR2c2lnaHR0aGNkeGFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczOTkyNTksImV4cCI6MjA5Mjk3NTI1OX0.umIb29AwZE_XWPbtW3rxPlm5DVzSwEA_6EXqmTCnxtA";
+        
+        const client = createClient(PROJECT_URL, PROJECT_ANON_KEY, {
+          auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true,
+            storage: typeof window !== 'undefined' ? window.localStorage : undefined
+          }
+        });
+        const { data: { session } } = await client.auth.getSession();
+        
+        if (!session) {
+           setNeedsLogin(true);
+           return;
+        }
+        setUser(session.user);
+
+        // Get the actual verification status from metadata (defaults to unsubmitted if it doesn't exist)
+        const meta = session.user.user_metadata || {};
+        setVerificationStatus(meta.verification_status || "unsubmitted");
+
+        const interests = meta.interests || [];
+        if (interests.includes("Legal")) setUserCategory("Legal");
+        else if (interests.includes("IT & Tech")) setUserCategory("IT & Tech");
+        else if (interests.includes("Clearance")) setUserCategory("Clearance");
+        else if (interests.includes("Consulting")) setUserCategory("Consulting");
+
+        const { data: gigsData } = await client
+          .from('gigs')
+          .select('*')
+          .eq('seller_id', session.user.id)
+          .order('created_at', { ascending: false });
+          
+        if (gigsData) setMyGigs(gigsData);
+      } catch (err) {
+        console.error("Seller Dashboard Error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    init();
+  }, []);
+
+  if (needsLogin) {
+    return (
+      <div className="min-h-[calc(100vh-80px)] flex flex-col items-center justify-center bg-zinc-50 dark:bg-zinc-950 font-sans">
+        <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mb-6 shadow-xl"><span className="text-white font-black text-2xl">S</span></div>
+        <h2 className="text-2xl font-black mb-2">Login Required</h2>
+        <a href="/login" className="bg-blue-600 text-white px-8 py-3 rounded-full font-bold">Return to Login</a>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-[calc(100vh-80px)] flex items-center justify-center bg-zinc-50 dark:bg-zinc-950">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      </div>
+    );
+  }
+
+  const firstName = user?.user_metadata?.first_name || "Professional";
+  const isLegal = userCategory === "Legal";
+  const isTech = userCategory === "IT & Tech";
+  const isClearance = userCategory === "Clearance";
+  const isConsulting = userCategory === "Consulting";
+
+  const dict = {
+    title: isLegal ? "Legal Practice Center" : isTech ? "Developer Workspace" : isClearance ? "Clearance Agency Hub" : isConsulting ? "Strategy & Advisory Suite" : "Seller Workspace",
+    subtitle: isLegal ? "Manage consultations and legal files." : isClearance ? "Track ministry filings and document processing." : isConsulting ? "Track advisory projects and strategy sessions." : "Manage your projects and gigs.",
+    btnPost: isLegal ? "List Practice Area" : isClearance ? "Add Clearance Service" : isConsulting ? "Define Advisory Scope" : "Post New Gig",
+    tabGigs: isLegal ? "Practice Areas" : isClearance ? "Service Catalog" : "Active Gigs",
+    tabOrders: isLegal ? "Consultations" : isClearance ? "Active Filings" : isConsulting ? "Active Projects" : "Orders",
+    metric1: isClearance ? "Success Rate" : isConsulting ? "Advisory Hours" : isLegal ? "Retainers" : "Available Funds",
+    metric2: isClearance ? "Pending Files" : isTech ? "Code Reviews" : "Active Orders",
+    iconGigs: isLegal ? Scale : isClearance ? FileText : isConsulting ? BarChart3 : Briefcase,
+    iconOrders: isClearance ? Activity : isConsulting ? TrendingUp : Clock,
+    colorFrom: isLegal ? "from-slate-700" : isClearance ? "from-amber-600" : isConsulting ? "from-purple-600" : "from-blue-600",
+    colorTo: isLegal ? "to-slate-900" : isClearance ? "to-orange-700" : isConsulting ? "to-indigo-800" : "to-indigo-700",
+    themeBg: isLegal ? "bg-slate-600 hover:bg-slate-700" : isClearance ? "bg-amber-600 hover:bg-amber-700" : isConsulting ? "bg-purple-600 hover:bg-purple-700" : "bg-blue-600 hover:bg-blue-700",
+    themeColor: isLegal ? "text-slate-600" : isClearance ? "text-amber-600" : isConsulting ? "text-purple-600" : "text-blue-600",
+  };
+
+  return (
+    <div className="min-h-screen bg-[#F8F9FB] dark:bg-zinc-950 font-sans pb-20">
+      <div className="max-w-7xl mx-auto px-6 py-10">
+        
+        {/* HEADER */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+          <div>
+            <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-zinc-900 dark:text-white flex items-center gap-3">
+              <dict.iconGigs className={`w-8 h-8 ${dict.themeColor}`} />
+              {dict.title}
+            </h1>
+            <p className="text-zinc-500 font-medium mt-2">{dict.subtitle}</p>
+          </div>
+          <a href="/post-service" className={`inline-flex h-14 items-center px-8 font-black text-white rounded-[2rem] shadow-xl transition-all hover:scale-105 active:scale-95 ${dict.themeBg}`}>
+            <Plus className="w-5 h-5 mr-2" /> {dict.btnPost}
+          </a>
+        </div>
+
+        {/* --- DYNAMIC VERIFICATION WIDGETS --- */}
+        {(isClearance || isLegal) && (
+          <div className={`mb-8 p-6 bg-white dark:bg-zinc-900 border rounded-[2.5rem] flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm transition-all ${
+            verificationStatus === 'verified' ? 'border-emerald-200 dark:border-emerald-900/30' : 
+            verificationStatus === 'pending' ? 'border-amber-200 dark:border-amber-900/30' : 
+            'border-red-200 dark:border-red-900/30'
+          }`}>
+            <div className="flex items-center gap-5">
+              
+              {/* Dynamic Icon */}
+              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${
+                verificationStatus === 'verified' ? 'bg-emerald-50 text-emerald-600' : 
+                verificationStatus === 'pending' ? 'bg-amber-50 text-amber-600' : 
+                'bg-red-50 text-red-600'
+              }`}>
+                {verificationStatus === 'verified' ? <ShieldCheck className="w-7 h-7" /> : <ShieldAlert className="w-7 h-7" />}
+              </div>
+
+              {/* Dynamic Text */}
+              <div>
+                <p className="font-black text-zinc-900 dark:text-white text-lg">
+                  {isLegal ? "Bar License Verification" : "Commercial Registration (CR)"}
+                </p>
+                <p className={`text-xs font-bold uppercase tracking-widest mt-1 ${
+                  verificationStatus === 'verified' ? 'text-emerald-500' : 
+                  verificationStatus === 'pending' ? 'text-amber-500' : 
+                  'text-red-500'
+                }`}>
+                  {verificationStatus === 'unsubmitted' && "STATUS: ACTION REQUIRED - PLEASE UPLOAD DOCUMENTS"}
+                  {verificationStatus === 'pending' && "STATUS: UNDER REVIEW BY TRUST & SAFETY TEAM"}
+                  {verificationStatus === 'verified' && "STATUS: VERIFIED & APPROVED"}
+                </p>
+              </div>
+            </div>
+
+            {/* Dynamic Button */}
+            {verificationStatus === 'unsubmitted' && (
+              <a href="/post-service" className="text-sm font-black text-white bg-red-500 px-6 py-3 rounded-xl hover:bg-red-600 transition-colors shadow-lg shadow-red-500/20">
+                Upload Documents Now
+              </a>
+            )}
+            {verificationStatus === 'pending' && (
+              <div className="text-sm font-black text-amber-600 bg-amber-50 px-6 py-3 rounded-xl">
+                Reviewing...
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* HERO BANNER */}
+        <div className={`relative bg-gradient-to-br ${dict.colorFrom} ${dict.colorTo} rounded-[2.5rem] p-10 overflow-hidden shadow-2xl mb-10 border border-white/10`}>
+          <div className="absolute inset-0 opacity-20 mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
+          <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+            <div className="text-white">
+              <h2 className="text-4xl font-black mb-2 tracking-tight">Marhaba, {firstName}</h2>
+              <p className="opacity-80 font-medium max-w-md">
+                {isLegal ? "Your practice is currently ranked among the top legal advisors in Bahrain." : 
+                 isClearance ? "Your agency's processing speed for LMRA is 15% faster than the average." :
+                 isConsulting ? "Your advisory impact score has increased by 12 points this week." :
+                 "Your projects are on track. Continue delivering excellence to maintain your elite status."}
+              </p>
+            </div>
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-[2rem] min-w-[200px]">
+               <p className="text-[10px] font-black text-white/60 uppercase tracking-widest mb-1">Response Rate</p>
+               <p className="text-3xl font-black text-white">100%</p>
+            </div>
+          </div>
+        </div>
+
+        {/* TABS */}
+        <div className="flex gap-2 mb-10 p-1 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] w-fit shadow-sm">
+          {['overview', 'gigs', 'orders'].map((t) => (
+            <button key={t} onClick={() => setActiveTab(t)} className={`px-8 py-3 rounded-full text-sm font-black transition-all ${activeTab === t ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm' : 'text-zinc-400 hover:text-zinc-600'}`}>
+              {t === 'overview' ? 'Overview' : t === 'gigs' ? dict.tabGigs : dict.tabOrders}
+            </button>
+          ))}
+        </div>
+
+        {/* CONTENT: OVERVIEW */}
+        {activeTab === 'overview' && (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+               <div className="bg-white dark:bg-zinc-900 p-8 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 shadow-sm">
+                 <p className="text-xs font-black text-zinc-400 uppercase tracking-widest mb-1">{dict.metric1}</p>
+                 <h3 className="text-4xl font-black text-zinc-900 dark:text-white">{isClearance ? "99.2%" : isConsulting ? "124 hrs" : "BHD 0"}</h3>
+               </div>
+               <div className="bg-white dark:bg-zinc-900 p-8 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 shadow-sm">
+                 <p className="text-xs font-black text-zinc-400 uppercase tracking-widest mb-1">{dict.metric2}</p>
+                 <h3 className="text-4xl font-black text-zinc-900 dark:text-white">0</h3>
+               </div>
+               <div className="bg-white dark:bg-zinc-900 p-8 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 shadow-sm">
+                 <p className="text-xs font-black text-zinc-400 uppercase tracking-widest mb-1">Elite Status</p>
+                 <h3 className={`text-4xl font-black ${dict.themeColor}`}>Active</h3>
+               </div>
+            </div>
+
+            {/* EMPTY STATE / ACTION CALL */}
+            <div className="bg-white dark:bg-zinc-900 rounded-[3rem] border border-zinc-200 dark:border-zinc-800 p-12 text-center shadow-sm">
+              <div className={`w-20 h-20 mx-auto rounded-[1.5rem] flex items-center justify-center mb-6 bg-zinc-50 dark:bg-zinc-800 ${dict.themeColor}`}>
+                <dict.iconOrders className="w-10 h-10" />
+              </div>
+              <h4 className="text-3xl font-black text-zinc-900 dark:text-white mb-2">No active {dict.tabOrders.toLowerCase()}</h4>
+              <p className="text-zinc-500 font-medium mb-8 max-w-sm mx-auto">Your queue is currently clear. Ensure your {dict.tabGigs.toLowerCase()} are optimized to attract new clients.</p>
+              <a href="/post-service" className={`inline-flex h-14 items-center px-8 font-black text-white rounded-full transition-all hover:scale-105 shadow-lg ${dict.themeBg}`}>
+                {dict.btnPost}
+              </a>
+            </div>
+          </div>
+        )}
+
+        {/* CONTENT: GIGS */}
+        {activeTab === 'gigs' && (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+            {myGigs.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {myGigs.map((gig) => (
+                  <div key={gig.id} className="bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm hover:shadow-xl transition-all group">
+                    <div className="h-40 bg-zinc-100 dark:bg-zinc-800 relative">
+                      <div className={`absolute top-4 left-4 inline-flex px-3 py-1 bg-white dark:bg-zinc-950 rounded-full text-[10px] font-black uppercase shadow-sm ${dict.themeColor}`}>
+                        {gig.category}
+                      </div>
+                    </div>
+                    <div className="p-6">
+                      <h4 className="text-lg font-bold text-zinc-900 dark:text-white mb-2 leading-snug line-clamp-2">{gig.title}</h4>
+                      <p className="text-zinc-500 text-sm mb-6 line-clamp-2">{gig.description}</p>
+                      <div className="flex justify-between items-center pt-4 border-t border-zinc-100 dark:border-zinc-800">
+                        <span className="text-zinc-400 text-[10px] uppercase font-black tracking-widest">{isLegal ? "Retainer" : isConsulting ? "Consultation" : "Project Rate"}</span>
+                        <span className="text-xl font-black text-zinc-900 dark:text-white">BHD {gig.price}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="bg-white dark:bg-zinc-900 rounded-[3rem] border border-zinc-200 dark:border-zinc-800 p-12 text-center shadow-sm">
+                 <div className={`w-20 h-20 mx-auto rounded-[1.5rem] flex items-center justify-center mb-6 bg-zinc-50 dark:bg-zinc-800 ${dict.themeColor}`}>
+                  <dict.iconGigs className="w-10 h-10" />
+                </div>
+                <h4 className="text-3xl font-black text-zinc-900 dark:text-white mb-2">Build your portfolio</h4>
+                <p className="text-zinc-500 font-medium mb-8">You haven't listed any {dict.tabGigs.toLowerCase()} yet.</p>
+                <a href="/post-service" className={`inline-flex h-14 items-center px-8 font-black text-white rounded-full transition-all hover:scale-105 shadow-lg ${dict.themeBg}`}>
+                  Get Started
+                </a>
+              </div>
+            )}
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+}
