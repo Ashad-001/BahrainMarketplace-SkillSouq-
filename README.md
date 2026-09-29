@@ -6,6 +6,7 @@ Users can discover, list, and manage freelance gigs and professional services th
 
 ![SkillSouq Preview](preview.png)
 ![SkillSouq Preview](preview1.png)
+![SkillSouq Preview](preview3.png)
 
 ## Features
 
